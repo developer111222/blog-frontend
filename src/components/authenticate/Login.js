@@ -1,16 +1,17 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useDispatch,useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import {toast } from 'react-toastify';
-import {userlogin,resetClear} from "../../actions/userAction"
+import {userlogin,ResetClear} from "../../actions/userAction"
+
 
 const Login = () => {
 const dispatch = useDispatch();
 const navigate = useNavigate();
 
-const {loading,error,success,message}=useSelector(state=>state.user)
+const {loading,error,issuccess,message}=useSelector(state=>state.users)
 
-console.log(loading,error,success,message)
+
 
 const [inputValue,setinputValue]=useState({
     email:"",password:""
@@ -25,17 +26,22 @@ const handleSubmit=(e)=>{
     e.preventDefault()
     
     dispatch(userlogin(inputValue))
+   
 }
+
 
 useEffect(()=>{
   if(error){
     toast.error(error)
-    dispatch(resetClear())
+    dispatch(ResetClear())
   }
-  if(success){
+  if(issuccess){
     toast.success(message)
+    navigate('/')
+   
   }
-},[dispatch, error, success, message,toast])
+
+},[dispatch, error, issuccess, message,toast,navigate])
 
   return (
     <div className='container-sm border p-5'>

@@ -12,9 +12,10 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
-import {userlogout} from "../../actions/userAction"
-import { useDispatch } from 'react-redux';
+import { userlogout } from "../../actions/userAction";
+import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import { NavLink, useNavigate } from 'react-router-dom';  // Import useNavigate
 
 const pages = ['Products', 'Pricing', 'Blog'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
@@ -24,10 +25,24 @@ function ResponsiveAppBar() {
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();  // Initialize useNavigate
+
+  const handlelogout = () => {
+    dispatch(userlogout())
+      .then(() => {
+        toast.success('Logged Out Successfully');
+        handleCloseUserMenu();
+        window.location.reload();
+      })
+      .catch((error) => {
+        toast.error('Logout failed. Please try again.');
+      });
+  };
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
   };
+
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
   };
@@ -40,11 +55,20 @@ function ResponsiveAppBar() {
     setAnchorElUser(null);
   };
 
-const handlelogout=()=>{
-  dispatch(userlogout());
-  toast.success('Logged Out Successfully');
-  handleCloseUserMenu();
-}
+  const handleMenuClick = (setting) => {
+    if (setting === 'Logout') {
+      handlelogout();
+    } else if (setting === 'Profile') {
+      navigate('/profile');  // Navigate to the Profile page
+    } 
+   else if (setting === 'Dashboard') {
+    navigate('/admin');  // Navigate to the Profile page
+  } 
+    else {
+      handleCloseUserMenu();
+    }
+    
+  };
 
   return (
     <AppBar position="static">
@@ -96,11 +120,9 @@ const handlelogout=()=>{
               onClose={handleCloseNavMenu}
               sx={{ display: { xs: 'block', md: 'none' } }}
             >
-              {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography sx={{ textAlign: 'center' }}>{page}</Typography>
-                </MenuItem>
-              ))}
+              <MenuItem onClick={handleCloseNavMenu}>
+                <Typography sx={{ textAlign: 'center' }}>login</Typography>
+              </MenuItem>
             </Menu>
           </Box>
           <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
@@ -123,15 +145,31 @@ const handlelogout=()=>{
             LOGO
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            {pages.map((page) => (
+            
+            <NavLink to="/login" >
               <Button
-                key={page}
                 onClick={handleCloseNavMenu}
                 sx={{ my: 2, color: 'white', display: 'block' }}
               >
-                {page}
+                login
               </Button>
-            ))}
+              </NavLink>
+              <NavLink to="signup">
+              <Button
+                onClick={handleCloseNavMenu}
+                sx={{ my: 2, color: 'white', display: 'block' }}
+              >
+                signup
+              </Button>
+              </NavLink>
+            <NavLink to="create-blog">
+              <Button
+                onClick={handleCloseNavMenu}
+                sx={{ my: 2, color: 'white', display: 'block' }}
+              >
+                Create blog
+              </Button>
+              </NavLink>
           </Box>
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
@@ -157,11 +195,11 @@ const handlelogout=()=>{
             >
               {settings.map((setting) => (
                 <MenuItem
-                key={setting}
-                onClick={setting === 'Logout' ? handlelogout : handleCloseUserMenu}  // Call handlelogout on Logout click
-              >
-                <Typography sx={{ textAlign: 'center' }}>{setting}</Typography>
-              </MenuItem>
+                  key={setting}
+                  onClick={() => handleMenuClick(setting)}  // Use the new function
+                >
+                  <Typography sx={{ textAlign: 'center' }}>{setting}</Typography>
+                </MenuItem>
               ))}
             </Menu>
           </Box>
@@ -170,4 +208,5 @@ const handlelogout=()=>{
     </AppBar>
   );
 }
+
 export default ResponsiveAppBar;
