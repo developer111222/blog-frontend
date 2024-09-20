@@ -2,7 +2,7 @@ import React from 'react'
 
 const getsiteurl = () => {
 
-    const url ='http://localhost:5555'
+    const url ='https://blog-backend-two-kappa.vercel.app/'
   return url
 }
 
